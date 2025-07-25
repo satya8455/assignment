@@ -1,0 +1,66 @@
+package com.watsoo.expense.serviceImpl;
+
+import org.springframework.stereotype.Service;
+
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.service.DashboardService;
+
+@Service
+public class DashboardServiceImpl implements DashboardService {
+
+//	@Override
+//	public Response<?> getAllDashboardData(Long userId, Long walletId, String month) {
+//		  try {
+//			   dashboardDto dashboardDto = new DashboardDto();
+//			   try {
+//			    YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+//			   } catch (DateTimeParseException e) {
+//			    return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid month format. Use yyyy-MM", null);
+//			   }
+//			   Date[] monthRange = getMonthRange(month);
+//			   SimpleDateFormat formtter = new SimpleDateFormat("yyyy-MM-dd");
+//			   String fromDate = formtter.format(monthRange[0]);
+//			   String toDate = formtter.format(monthRange[1]);
+//			   List<IncomeTransactionDto> incomeTransactionDtos = new ArrayList<>();
+//			   try {
+//			    Response<List<IncomeTransactionDto>> expensesResponse = walletFeignClient
+//			      .getAllIncomeTransactions(userId, null, fromDate, toDate);
+//			    incomeTransactionDtos = expensesResponse.getData();
+//			   } catch (Exception e) {
+//			    return new Response<>(HttpStatus.BAD_REQUEST.value(),
+//			      "user not found or Please provide both startDate and endDate", null);
+//			   }
+//
+//			   Response<?> expenses = expenseService.getAllExpenses(userId, null, month);
+//			   if (expenses.getResponseCode() != HttpStatus.OK.value()) {
+//			    return new Response<>(HttpStatus.BAD_REQUEST.value(), "expenses not found.", null);
+//			   }
+//			   List<ExpenseDto> expenseDtos = (List<ExpenseDto>) expenses.getData();
+//			   Double spent = 0.0;
+//			   for (ExpenseDto dto : expenseDtos) {
+//			    spent += dto.getAmount();
+//			   }
+//			   Double income= 0.0 ;
+//			   for(IncomeTransactionDto dto :incomeTransactionDtos) {
+//			    income += dto.getAmount();
+//			   }
+//			   dashboardDto.setExpenses(expenseDtos);
+//			   dashboardDto.setIncomeTransactions(incomeTransactionDtos);
+//			   dashboardDto.setTotalIncome(income);
+//			   dashboardDto.setTotalSpent(spent);
+//			   dashboardDto.setMonth(month);
+//			   return new Response<>(HttpStatus.OK.value(), "fetched successfully", dashboardDto);
+//			  } catch (Exception e) {
+//			   e.printStackTrace();
+//			   return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+//			  }
+//			     
+//			 }
+
+	@Override
+	public Response<?> getDashboardSummary(Long userId, Long walletId, String month) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

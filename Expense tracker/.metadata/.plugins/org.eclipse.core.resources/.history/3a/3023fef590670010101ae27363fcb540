@@ -1,0 +1,23 @@
+package com.watsoo.wallet.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.watsoo.wallet.entity.WalletType;
+
+public interface WalletTypeRepository extends JpaRepository<WalletType, Long> {
+
+	@Query(value = "SELECT * FROM wallet_types WHERE user_id = ?1 OR user_id IS NULL", nativeQuery = true)
+	List<WalletType> findAllAndfindByUserId(Long id);
+
+	Optional<WalletType> findByName(String name);
+
+	@Query(value = "SELECT * FROM wallet_types WHERE name = ?1 AND user_id = ?2 LIMIT 1", nativeQuery = true)
+	Optional<WalletType> findByNameAndUserId(String name, Long userId);
+
+	@Query(value = "SELECT * FROM wallet_types WHERE name = ?1 AND user_id IS NULL LIMIT 1", nativeQuery = true)
+	Optional<WalletType> findByNameAndUserIdIsNull(String name);
+}

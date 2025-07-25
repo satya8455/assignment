@@ -1,0 +1,5 @@
+package com.watsoo.expense.serviceImpl;
+
+public class EmailServiceImpl {
+
+}

@@ -1,0 +1,5 @@
+package com.watsoo.expense.service;
+
+public interface EmailService {
+	public void sendToUserForExceedBudget(String email, String name, String categoryName);
+}

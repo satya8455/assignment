@@ -1,0 +1,26 @@
+package com.watsoo.expense.repository;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.watsoo.expense.entity.CategoryBudget;
+import com.watsoo.expense.entity.ExpenseCategory;
+
+public interface CategoryBudgetRepository extends JpaRepository<CategoryBudget, Long> {
+
+	@Query(value = "select * from category_budget where month=?1 and user_id =?2",nativeQuery = true)
+	Optional<CategoryBudget> findByMonthAndUserId(String month, Long userId);
+
+//	Optional<CategoryBudget> findByMonthAndExpenseCategory_IdAndUserId(String month, Long id, Long userId);
+
+	@Query(value = "SELECT * FROM category_budget " +
+            "WHERE month = ?1 AND expense_category_id = ?2 AND user_id = ?3 " +
+            "LIMIT 1", nativeQuery = true)
+Optional<CategoryBudget> findByMonthAndCategoryAndUser(String month, Long categoryId, Long userId);
+
+//	Optional<CategoryBudget> findByMonthAndExpenseCategory_IdAndUserId(String month, Long id, Long userId);
+
+	
+}

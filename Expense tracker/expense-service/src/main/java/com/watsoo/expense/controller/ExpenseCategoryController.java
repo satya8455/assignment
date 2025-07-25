@@ -1,0 +1,43 @@
+package com.watsoo.expense.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.watsoo.expense.dto.CategoryBudgetDto;
+import com.watsoo.expense.dto.CategoryDto;
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.service.ExpenseCategoryService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@Tag(name = "ExpenseCategory Management", description = "APIs for managing expensesCategory")
+public class ExpenseCategoryController {
+	@Autowired
+	private ExpenseCategoryService expenseCategoryService;
+
+	@PostMapping("create/expense/category")
+	public ResponseEntity<?> createExpenseCategory(@RequestBody CategoryDto categoryDto) {
+		Response<?> response = expenseCategoryService.createExpenseCategory(categoryDto);
+		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));
+	}
+	
+	@GetMapping("get/all/expense/category/{userId}")
+	public ResponseEntity<?> getAllExpenseCategory(@PathVariable Long userId) {
+		Response<?> response = expenseCategoryService.getAllExpenseCategory(userId);
+		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));
+
+	}
+	
+	@PostMapping("create/budget")
+	public ResponseEntity<?> createMontlyBudget(@RequestBody CategoryBudgetDto categoryBudgetDto) {
+		Response<?> response = expenseCategoryService.createMonthlyBudget(categoryBudgetDto);
+		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));
+	}
+}

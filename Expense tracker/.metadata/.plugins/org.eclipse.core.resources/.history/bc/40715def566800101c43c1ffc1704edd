@@ -1,0 +1,8 @@
+package com.watsoo.expense.config;
+
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+    // No configuration needed unless customizing
+}

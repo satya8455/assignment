@@ -1,0 +1,36 @@
+package com.watsoo.expense.feignClient;
+
+import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.watsoo.expense.dto.IncomeTransactionDto;
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.dto.UserDto;
+import com.watsoo.expense.dto.WalletDto;
+import com.watsoo.expense.feignClient.fallback.WalletFeignClientFallBack;
+
+
+@FeignClient(name = "WALLET-SERVICE",fallback = WalletFeignClientFallBack.class)
+public interface WalletFeignClient {
+	
+	@GetMapping("get/wallet/{id}")
+    Response<WalletDto> getWalletById(@PathVariable("id") Long id);	
+	@PostMapping("deduct/from/wallet")
+	public Response<?> deductFromWallet(@RequestBody WalletDto walletDto);
+	
+	
+	 @GetMapping("get/all/income-transactions")
+	  public Response<List<IncomeTransactionDto>> getAllIncomeTransactions(@RequestParam Long userId,
+	          @RequestParam(required = false) Long walletId,
+	          @RequestParam(required = false) String startDate,
+	          @RequestParam(required = false) String endDate) ;
+	 
+	 @GetMapping("/get/user/by/{id}")
+	 public Response<UserDto> getUserById(@PathVariable("id") Long id);
+}

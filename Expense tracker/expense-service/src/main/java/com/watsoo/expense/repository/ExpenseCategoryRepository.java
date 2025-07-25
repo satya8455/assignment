@@ -1,0 +1,20 @@
+package com.watsoo.expense.repository;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.watsoo.expense.entity.ExpenseCategory;
+@Repository
+public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory, Long> {
+
+	@Query(value = "SELECT * FROM expense_category WHERE user_id IS NULL OR user_id = ?1", nativeQuery = true)
+	List<ExpenseCategory> findAllByUserId(Long userId);
+
+	Optional<ExpenseCategory> findByNameAndUserId(String categoryName, Long userId);
+
+
+}

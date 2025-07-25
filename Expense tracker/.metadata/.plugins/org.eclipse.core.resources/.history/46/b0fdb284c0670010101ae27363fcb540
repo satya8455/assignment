@@ -1,0 +1,24 @@
+package com.watsoo.expense.repository;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.watsoo.expense.entity.Expense;
+
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+
+	@Query(value = "select COALESCE(sum(amount), 0) from expense " + "where date between ?1 AND ?2 "
+			+ "AND category_id = ?3 " + "AND user_id = ?4", nativeQuery = true)
+	Double sumOfExpenses(Date startDate, Date endDate, Long categoryId, Long userId);
+
+	@Query(value = "SELECT * FROM expense WHERE user_id = ?1 AND date BETWEEN ?2 AND ?3", nativeQuery = true)
+	List<Expense> findAllByUserAndDateRange(Long userId, Date from, Date to);
+
+	@Query(value = "SELECT * FROM expense WHERE user_id = ?1 AND wallet_id = ?2 AND date BETWEEN ?3 AND ?4", nativeQuery = true)
+	List<Expense> findAllByUserWalletAndDateRange(Long userId, Long walletId, Date from, Date to);
+
+}

@@ -1,0 +1,27 @@
+package com.watsoo.wallet.service;
+
+import com.watsoo.wallet.dto.IncomeTransactionDto;
+import com.watsoo.wallet.dto.LoginRequest;
+import com.watsoo.wallet.dto.RegistrationDto;
+import com.watsoo.wallet.dto.Response;
+import com.watsoo.wallet.dto.WalletDto;
+
+public interface ValidationService {
+
+	Response<?> checkForLoginPayload(LoginRequest loginRequest);
+
+	boolean checkMail(String mail);
+
+	boolean checkFullName(String name);
+
+	boolean checkPhoneNo(String phoneNo);
+
+	Response<Object> checkForUserRegistrationPayload(RegistrationDto registrationDto);
+
+	Response<?> checkForWalletPayLoad(WalletDto walletDto);
+
+	Response<?> checkForIncomePayload(IncomeTransactionDto incomeTransactionDto);
+
+	Response<?> checkForWalletDeductPayLoad(WalletDto walletDto);
+
+}

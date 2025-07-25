@@ -1,0 +1,5 @@
+package com.watsoo.wallet.dto;
+
+public class DashboardDto {
+
+}

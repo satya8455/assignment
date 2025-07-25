@@ -1,0 +1,135 @@
+package com.watsoo.expense.serviceImpl;
+
+import org.springframework.stereotype.Service;
+
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.service.DashboardService;
+
+@Service
+public class DashboardServiceImpl implements DashboardService {
+
+	@Override
+	public Response<?> getAllDashboardData(Long userId, Long walletId, String month) {
+		  try {
+			   dashboardDto dashboardDto = new DashboardDto();
+			   try {
+			    YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+			   } catch (DateTimeParseException e) {
+			    return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid month format. Use yyyy-MM", null);
+			   }
+			   Date[] monthRange = getMonthRange(month);
+			   SimpleDateFormat formtter = new SimpleDateFormat("yyyy-MM-dd");
+			   String fromDate = formtter.format(monthRange[0]);
+			   String toDate = formtter.format(monthRange[1]);
+			   List<IncomeTransactionDto> incomeTransactionDtos = new ArrayList<>();
+			   try {
+			    Response<List<IncomeTransactionDto>> expensesResponse = walletFeignClient
+			      .getAllIncomeTransactions(userId, null, fromDate, toDate);
+			    incomeTransactionDtos = expensesResponse.getData();
+			   } catch (Exception e) {
+			    return new Response<>(HttpStatus.BAD_REQUEST.value(),
+			      "user not found or Please provide both startDate and endDate", null);
+			   }
+
+			   Response<?> expenses = expenseService.getAllExpenses(userId, null, month);
+			   if (expenses.getResponseCode() != HttpStatus.OK.value()) {
+			    return new Response<>(HttpStatus.BAD_REQUEST.value(), "expenses not found.", null);
+			   }
+			   List<ExpenseDto> expenseDtos = (List<ExpenseDto>) expenses.getData();
+			   Double spent = 0.0;
+			   for (ExpenseDto dto : expenseDtos) {
+			    spent += dto.getAmount();
+			   }
+			   Double income= 0.0 ;
+			   for(IncomeTransactionDto dto :incomeTransactionDtos) {
+			    income += dto.getAmount();
+			   }
+			   dashboardDto.setExpenses(expenseDtos);
+			   dashboardDto.setIncomeTransactions(incomeTransactionDtos);
+			   dashboardDto.setTotalIncome(income);
+			   dashboardDto.setTotalSpent(spent);
+			   dashboardDto.setMonth(month);
+			   return new Response<>(HttpStatus.OK.value(), "fetched successfully", dashboardDto);
+			  } catch (Exception e) {
+			   e.printStackTrace();
+			   return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			  }
+			     
+			 }
+
+	@Override
+	public Response<?> getDashboardSummary(Long userId, Long walletId, String month) {public Response<?> getDashboardSummary(Long userId, Long walletId, String month) {
+	    try {
+	        if (month == null || month.trim().isEmpty()) {
+	            return new Response<>(HttpStatus.BAD_REQUEST.value(), "Month required (yyyy-MM)", null);
+	        }
+
+	        // Validate month
+	        try {
+	            YearMonth.parse(month, DateTimeFormatter.ofPattern("yyyy-MM"));
+	        } catch (DateTimeParseException e) {
+	            return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid month format. Use yyyy-MM", null);
+	        }
+
+	        // Get month range
+	        Date[] range = getMonthRange(month);
+	        Date startDate = range[0];
+	        Date endDate = range[1];
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	        // 1. Get Expenses
+	        Response<?> expensesResp = this.getAllExpenses(userId, walletId, month);
+	        if (expensesResp.getResponseCode() != HttpStatus.OK.value()) {
+	            return new Response<>(HttpStatus.BAD_REQUEST.value(), "Could not fetch expenses", null);
+	        }
+	        List<ExpenseDto> expenses = (List<ExpenseDto>) expensesResp.getData();
+	        double totalSpent = expenses.stream().mapToDouble(ExpenseDto::getAmount).sum();
+
+	        // 2. Get Income Transactions using Feign
+	        Response<List<IncomeTransactionDto>> incomeResp;
+	        List<IncomeTransactionDto> incomes;
+	        try {
+	            incomeResp = walletFeignClient.getAllIncomeTransactions(
+	                userId,
+	                walletId,
+	                formatter.format(startDate),
+	                formatter.format(endDate)
+	            );
+	            incomes = incomeResp.getData();
+	        } catch (Exception e) {
+	            return new Response<>(HttpStatus.BAD_REQUEST.value(), "Failed to fetch income via wallet service", null);
+	        }
+	        double totalIncome = incomes.stream().mapToDouble(IncomeTransactionDto::getAmount).sum();
+
+	        // 3. Group by Category
+	        Map<String, Double> categorySummary = expenses.stream()
+	            .collect(Collectors.groupingBy(
+	                e -> e.getCategoryDto().getName(),
+	                Collectors.summingDouble(ExpenseDto::getAmount)
+	            ));
+
+	        // 4. Budget Exceeded
+	        boolean isExceed = budgetRepository.existsByMonthAndUserIdAndIsExceededTrue(month, userId);
+
+	        // 5. Build DTO
+	        DashboardDto dashboardDto = new DashboardDto();
+	        dashboardDto.setMonth(month);
+	        dashboardDto.setUserId(userId);
+	        dashboardDto.setWalletId(walletId);
+	        dashboardDto.setExpenses(expenses);
+	        dashboardDto.setIncomeTransactions(incomes);
+	        dashboardDto.setTotalIncome(totalIncome);
+	        dashboardDto.setTotalSpent(totalSpent);
+	        dashboardDto.setIsExceed(isExceed);
+	        dashboardDto.setCategorySummary(categorySummary);
+
+	        return new Response<>(HttpStatus.OK.value(), "Dashboard summary fetched", dashboardDto);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+	    }
+	}
+}
+
+}

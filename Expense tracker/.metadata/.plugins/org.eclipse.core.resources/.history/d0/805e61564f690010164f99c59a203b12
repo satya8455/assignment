@@ -1,0 +1,43 @@
+package com.watsoo.expense.feignClient.fallback;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import com.watsoo.expense.dto.IncomeTransactionDto;
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.dto.WalletDto;
+import com.watsoo.expense.feignClient.WalletFeignClient;
+
+public class WalletFeignClientFallBack implements WalletFeignClient {
+
+//	@Override
+//	public Response<?> getWalletById(Long userId, Long id) {
+//		return new Response<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "Server is shutdown or something went wrong",
+//				null);
+//
+//	}
+
+	@Override
+	public Response<?> deductFromWallet(WalletDto walletDto) {
+		return new Response<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "Server is shutdown or something went wrong",
+				null);
+
+	}
+
+	@Override
+	public Response<WalletDto> getWalletById(Long Id) {
+		// TODO Auto-generated method stub
+		return new Response<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "Server is shutdown or something went wrong",
+				null);	}
+
+	@Override
+	public Response<List<IncomeTransactionDto>> getAllIncomeTransactions(Long userId, Long walletId, String format,
+			String format2) {
+		// TODO Auto-generated method stub
+		return new Response<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "Server is shutdown or something went wrong",
+				null);	}
+	
+
+}

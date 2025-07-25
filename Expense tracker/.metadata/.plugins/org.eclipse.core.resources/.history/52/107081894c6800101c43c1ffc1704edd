@@ -1,0 +1,122 @@
+package com.watsoo.expense.dto;
+
+import java.util.Date;
+
+public class ExpenseDto {
+	private Long id ;
+    private Double amount;
+    private Date date; 
+    private CategoryDto categoryDto ;
+    private Long categoryId;
+    private Long walletId;
+    private String remarks;
+    private Long userId;
+    private WalletDto walletDto ;
+
+    
+    
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public Double getAmount() {
+		return amount;
+	}
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public Long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+	public Long getWalletId() {
+		return walletId;
+	}
+	public void setWalletId(Long walletId) {
+		this.walletId = walletId;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	
+	public CategoryDto getCategoryDto() {
+		return categoryDto;
+	}
+	public void setCategoryDto(CategoryDto categoryDto) {
+		this.categoryDto = categoryDto;
+	}
+	
+	public WalletDto getWalletDto() {
+		return walletDto;
+	}
+	public void setWalletDto(WalletDto walletDto) {
+		this.walletDto = walletDto;
+	}
+	public ExpenseDto() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public ExpenseDto(Double amount, Date date, CategoryDto categoryDto, Long categoryId, Long walletId,
+			String remarks, Long userId) {
+		super();
+		this.amount = amount;
+		this.date = date;
+		this.categoryDto = categoryDto;
+		this.categoryId = categoryId;
+		this.walletId = walletId;
+		this.remarks = remarks;
+		this.userId = userId;
+	}
+	public ExpenseDto(Long id, Double amount, Date date, CategoryDto categoryDto, Long categoryId, Long walletId,
+			String remarks, Long userId) {
+		super();
+		this.id = id;
+		this.amount = amount;
+		this.date = date;
+		this.categoryDto = categoryDto;
+		this.categoryId = categoryId;
+		this.walletId = walletId;
+		this.remarks = remarks;
+		this.userId = userId;
+	}
+	public ExpenseDto(Long id, Double amount, Date date, CategoryDto categoryDto, Long categoryId, Long walletId,
+			String remarks, Long userId, WalletDto walletDto) {
+		super();
+		this.id = id;
+		this.amount = amount;
+		this.date = date;
+		this.categoryDto = categoryDto;
+		this.categoryId = categoryId;
+		this.walletId = walletId;
+		this.remarks = remarks;
+		this.userId = userId;
+		this.walletDto = walletDto;
+	}
+	
+	
+	
+	
+	
+	
+    
+    
+}

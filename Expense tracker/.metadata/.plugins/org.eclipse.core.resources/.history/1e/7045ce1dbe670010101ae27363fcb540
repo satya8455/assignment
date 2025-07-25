@@ -1,0 +1,197 @@
+package com.watsoo.expense.serviceImpl;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.watsoo.expense.dto.ExpenseDto;
+import com.watsoo.expense.dto.Response;
+import com.watsoo.expense.dto.UserDto;
+import com.watsoo.expense.dto.WalletDto;
+import com.watsoo.expense.entity.CategoryBudget;
+import com.watsoo.expense.entity.Expense;
+import com.watsoo.expense.entity.ExpenseCategory;
+import com.watsoo.expense.feignClient.WalletFeignClient;
+import com.watsoo.expense.repository.CategoryBudgetRepository;
+import com.watsoo.expense.repository.ExpenseCategoryRepository;
+import com.watsoo.expense.repository.ExpenseRepository;
+import com.watsoo.expense.service.EmailService;
+import com.watsoo.expense.service.ExpenseService;
+
+@Service
+public class ExpenseServiceImpl implements ExpenseService {
+
+	@Autowired
+	private ExpenseRepository expenseRepository;
+
+	@Autowired
+	private ExpenseCategoryRepository expenseCategoryRepository;
+
+	@Autowired
+	private WalletFeignClient walletFeignClient;
+
+	@Autowired
+	private CategoryBudgetRepository categoryBudgetRepository;
+	@Autowired
+	private EmailService emailService;
+
+	@Override
+	public Response<?> createExpense(ExpenseDto expenseDto) {
+		try {
+			Response<WalletDto> walletResponse = walletFeignClient.getWalletById(expenseDto.getWalletId());
+			if (walletResponse == null || walletResponse.getData() == null) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet not found", null);
+			}
+			WalletDto walletDto = walletResponse.getData();
+			if (!walletDto.getUserDto().getId().equals(expenseDto.getUserId())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Unauthorized wallet access", null);
+			}
+			if (walletDto.getBalance() < expenseDto.getAmount()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Insufficient wallet balance", null);
+			}
+			Optional<ExpenseCategory> categoryOpt = expenseCategoryRepository.findById(expenseDto.getCategoryId());
+			if (categoryOpt.isEmpty()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid category ID", null);
+			}
+
+			ExpenseCategory category = categoryOpt.get();
+
+			if (category.getUserId() != null && !category.getUserId().equals(expenseDto.getUserId())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Unauthorized category access", null);
+			}
+
+//			String month = formatDateToYearMonth(new Date());
+			Date[] range = getMonthDateRange(formatDateToYearMonth(new Date()));
+			Date startDate = range[0];
+			Date endDate = range[1];
+			Optional<CategoryBudget> budgetOpt = categoryBudgetRepository.findByMonthAndCategoryAndUser(month,
+					category.getId(), expenseDto.getUserId());
+
+			if (budgetOpt.isEmpty()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please create monthly budget first", null);
+			}
+
+			CategoryBudget budget = budgetOpt.get();
+
+			// Calculate total spent this month in this category
+			Double totalSpentThisMonth = expenseRepository.sumOfExpensesByMonthAndCategory(month, category.getId(),
+					expenseDto.getUserId());
+
+			Double projectedTotal = totalSpentThisMonth + expenseDto.getAmount();
+			System.out.println(projectedTotal+"  "+totalSpentThisMonth);
+			if (projectedTotal > budget.getAmount()) {
+				budget.setIsExceeded(true);
+				walletDto = walletResponse.getData(); 
+				if (walletDto != null && walletDto.getUserDto() != null) {
+					String email = walletDto.getUserDto().getEmail();
+					String name = walletDto.getUserDto().getName();
+					emailService.sendBudgetExceededMail(email, name, category.getName());
+					System.out.println("email sent ");
+				}
+
+			} else {
+				budget.setIsExceeded(false);
+			}
+			categoryBudgetRepository.save(budget);
+
+			WalletDto dto = new WalletDto();
+			dto.setBalance(expenseDto.getAmount());
+			dto.setId(expenseDto.getWalletId());
+			UserDto userDto = new UserDto();
+			userDto.setId(expenseDto.getUserId());
+			dto.setUserDto(userDto);
+
+			Response<?> deductResponse = walletFeignClient.deductFromWallet(dto);
+			if (deductResponse.getResponseCode() != HttpStatus.OK.value()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet deduction failed", null);
+			}
+
+			Expense expense = new Expense();
+			expense.setAmount(expenseDto.getAmount());
+			expense.setDate(new Date());
+			expense.setWalletId(expenseDto.getWalletId());
+			expense.setRemarks(expenseDto.getRemarks());
+			expense.setCategory(categoryOpt.get());
+			expense.setUserId(expenseDto.getUserId());
+			expenseRepository.save(expense);
+
+			return new Response<>(HttpStatus.OK.value(), "Expense saved and wallet updated", null);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+		}
+	}
+
+	public Response<?> getAllExpenses(Long userId, Long walletId, String monthString) {
+		try {
+			if (monthString == null || monthString.trim().isEmpty()) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Month is required in yyyy-MM format.", null);
+			}
+
+			// Validate month format
+			try {
+				YearMonth.parse(monthString, DateTimeFormatter.ofPattern("yyyy-MM"));
+			} catch (DateTimeParseException e) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Invalid month format. Use yyyy-MM", null);
+			}
+
+			Date[] monthRange = getMonthDateRange(monthString);
+			Date startDate = removeTime(monthRange[0]);
+			Date endDate = removeTime(monthRange[1]);
+
+			List<Expense> expenses;
+			if (walletId == null) {
+				expenses = expenseRepository.findAllByUserAndDateRange(userId, startDate, endDate);
+			} else {
+				expenses = expenseRepository.findAllByUserWalletAndDateRange(userId, walletId, startDate, endDate);
+			}
+
+			List<ExpenseDto> groupedExpenses = expenses.stream().map(Expense::convertToDto)
+					.collect(Collectors.toList());
+
+			return new Response<>(HttpStatus.OK.value(), "Expenses grouped successfully.", groupedExpenses);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+		}
+	}
+
+	private Date[] getMonthDateRange(String yyyyMM) {
+		YearMonth ym = YearMonth.parse(yyyyMM, DateTimeFormatter.ofPattern("yyyy-MM"));
+		LocalDate start = ym.atDay(1);
+		LocalDate end = ym.atEndOfMonth();
+		return new Date[] { java.sql.Date.valueOf(start), java.sql.Date.valueOf(end) };
+	}
+
+	private Date removeTime(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		return cal.getTime();
+	}
+
+	public static String formatDateToYearMonth(Date date) {
+		if (date == null)
+			return null;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM");
+		return formatter.format(date);
+	}
+}

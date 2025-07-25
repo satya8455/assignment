@@ -1,0 +1,9 @@
+INDEX VERSION 1.4+/home/watsoo/assn/Expense tracker/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes
+3226342384.index
+2735129089.index
+3156294063.index
+1833045247.index
+996914263.index
+3697549900.index
+3656642485.index
+3665492515.index
