@@ -109,6 +109,9 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public Response<?> getAllBooks(SearchDto searchDto) {
 		try {
+			if(searchDto.getPageSize()<=0 ) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(),"Paze size must not be zero",null);
+			}
 			// TODO Auto-generated method stub
 			Pageable pageable = PageRequest.of(searchDto.getPageNo(), searchDto.getPageSize(),
 					Sort.by("id").descending());

@@ -167,6 +167,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response<?> getAllUsers(Long id) {
 		try {
+			if(id==null) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "please provide user id", null);
+
+			}
 			Optional<User> userOptional = userRepository.findById(id);
 			if (!userOptional.isPresent()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "User does not exist", null);
