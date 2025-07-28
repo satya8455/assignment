@@ -21,7 +21,7 @@ public class WalletFeignClientFallBack implements WalletFeignClient {
 //	}
 
 	@Override
-	public Response<?> deductFromWallet(WalletDto walletDto) {
+	public Response<?> deductAmountFromWallet(WalletDto walletDto) {
 		return new Response<>(HttpStatus.SERVICE_UNAVAILABLE.value(), "Server is shutdown or something went wrong",
 				null);
 

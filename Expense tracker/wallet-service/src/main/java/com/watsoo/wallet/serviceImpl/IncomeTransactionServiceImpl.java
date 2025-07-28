@@ -43,6 +43,9 @@ public class IncomeTransactionServiceImpl implements IncomeTransactionService {
 			if (incomeTransactionDto.getId() == null) {
 				Optional<Wallet> walletOptional = walletRepository
 						.findById(incomeTransactionDto.getWalletDto().getId());
+				if(walletOptional.isEmpty()) {
+					return new Response<>(HttpStatus.BAD_REQUEST.value(),"wallet id is not present",null);
+				}
 				Wallet wallet = walletOptional.get();
 				if (walletOptional.isPresent()) {
 					IncomeTransaction incomeTransaction = new IncomeTransaction();

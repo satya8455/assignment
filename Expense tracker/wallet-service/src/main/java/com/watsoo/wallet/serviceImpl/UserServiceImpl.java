@@ -163,31 +163,32 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	
 	@Override
-	public Response<?> getAllUsers(Long id) {
-		try {
-			Optional<User> userDetails = customizedUserDetailsService.getUserDetails();
-			if(id == null) {
-				if(userDetails.get().getRole().equals(Role.ADMIN)) {
-					List<User> users = userRepository.findAll();
-					List<UserDto> userDtos = users.stream()
-						 .map(e->e.convertToDto())
-						 .collect(Collectors.toList());
-					return new Response<>(HttpStatus.OK.value(), "OK",userDtos);
+		public Response<?> getAllUsers(Long id) {
+			try {
+				if(id == null) {
+					return new Response<>(HttpStatus.BAD_REQUEST.value(), "User-ID is required", null);
 				}
-				return new Response<>(HttpStatus.BAD_REQUEST.value(), "You have no access to this api",null);
+				Optional<User> userOptional = userRepository.findById(id);
+				if (!userOptional.isPresent()) {
+					return new Response<>(HttpStatus.BAD_REQUEST.value(), "User does not exist", null);
+				}
+	 
+				if (userOptional.get().getRole().equals(Role.ADMIN)) {
+					List<User> users = userRepository.findAll();
+					List<UserDto> userDtos = users.stream().map(e -> e.convertToDto()).collect(Collectors.toList());
+					return new Response<>(HttpStatus.OK.value(), "OK", userDtos);
+				}
+	 
+				return new Response<>(HttpStatus.OK.value(), "You don't have permission for this route", null);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
 			}
-			Optional<User> userOptional = userRepository.findById(id);
-			if (userOptional.isEmpty()) {
-				return new Response<>(HttpStatus.BAD_REQUEST.value(), "User not found with such userId", null);
-			}
-			UserDto userDto = userOptional.get().convertToDto();
-			return new Response<>(HttpStatus.OK.value(), "OK",userDto);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
 		}
-	}
+	 
+	 
 
 	@Override
 	public Response<?> getUserById(Long id) {

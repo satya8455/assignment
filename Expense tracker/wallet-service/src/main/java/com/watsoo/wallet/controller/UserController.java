@@ -44,7 +44,7 @@ public class UserController {
 		return new ResponseEntity<>(validationResponse, HttpStatus.valueOf(validationResponse.getResponseCode()));
 	}
 
-	@GetMapping("api/get/all/users")
+	@GetMapping("/get/all/users")
 	public ResponseEntity<?> getAllUsers(@RequestParam(required = false) Long id) {
 		Response<?> response = userService.getAllUsers(id);
 		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));

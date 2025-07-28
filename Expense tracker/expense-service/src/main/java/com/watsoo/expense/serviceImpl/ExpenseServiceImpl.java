@@ -110,7 +110,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 			userDto.setId(expenseDto.getUserId());
 			dto.setUserDto(userDto);
 
-			Response<?> deductResponse = walletFeignClient.deductFromWallet(dto);
+			Response<?> deductResponse = walletFeignClient.deductAmountFromWallet(dto);
 			if (deductResponse.getResponseCode() != HttpStatus.OK.value()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet deduction failed", null);
 			}

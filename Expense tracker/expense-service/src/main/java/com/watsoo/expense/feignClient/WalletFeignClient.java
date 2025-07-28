@@ -21,8 +21,8 @@ public interface WalletFeignClient {
 	
 	@GetMapping("get/wallet/{id}")
     Response<WalletDto> getWalletById(@PathVariable("id") Long id);	
-	@PostMapping("deduct/from/wallet")
-	public Response<?> deductFromWallet(@RequestBody WalletDto walletDto);
+	@PostMapping("/deduct/wallet")
+	public Response<?> deductAmountFromWallet(@RequestBody WalletDto walletDto);
 	
 	
 	 @GetMapping("get/all/income-transactions")

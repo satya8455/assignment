@@ -28,40 +28,42 @@ public class ValidationServiceImpl implements ValidationService {
 	}
 
 	@Override
-	public Response<Object> checkForUserRegistrationPayload(RegistrationDto registrationDto) {
-		if (registrationDto == null) {
-			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide data  for registration.", null);
+	public Response<Object> checkForUserRegistrationPayload(RegistrationDto dto) {
+		if (dto == null) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide data for registration.", null);
 		}
-		if (registrationDto.getId() == null) {
-			if (registrationDto.getName() != null) {
-				if (!checkFullName(registrationDto.getName())) {
-					return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid name.", null);
-				}
-			} else if (registrationDto.getName() == null || registrationDto.getName().isEmpty()) {
+
+		// Create
+		if (dto.getId() == null) {
+
+			if (dto.getName() == null || dto.getName().isEmpty()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide name.", null);
-			} else if (registrationDto.getPassword() == null || registrationDto.getPassword().isEmpty()) {
+			} else if (!checkFullName(dto.getName())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid name.", null);
+			} else if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide password.", null);
-			} else if (registrationDto.getEmail() != null) {
-				if (!checkMail(registrationDto.getEmail())) {
-					return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid email.", null);
-				}
-			} else if (registrationDto.getEmail() == null || registrationDto.getEmail().isEmpty()) {
+			} else if (dto.getEmail() == null || dto.getEmail().isEmpty()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide email.", null);
-			} else if (registrationDto.getPhoneNumber() != null) {
-				if (!checkPhoneNo(registrationDto.getPhoneNumber())) {
-					return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid phone number.", null);
-				}
-			} else if (registrationDto.getPhoneNumber() == null || registrationDto.getPhoneNumber().isEmpty()) {
+			} else if (!checkMail(dto.getEmail())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid email.", null);
+			} else if (dto.getPhoneNumber() == null || dto.getPhoneNumber().isEmpty()) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide phone number.", null);
+			} else if (!checkPhoneNo(dto.getPhoneNumber())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide valid phone number.", null);
+			} else if (dto.getRole() == null) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide ROLE[USER/ADMIN].", null);
 			}
+
 		} else {
-			if ((registrationDto.getName() == null || registrationDto.getName().isEmpty())
-					&& (registrationDto.getEmail() == null || registrationDto.getEmail().isEmpty())
-					&& (registrationDto.getPhoneNumber() == null || registrationDto.getPhoneNumber().isEmpty())) {
+			// Update
+			if ((dto.getName() == null || dto.getName().isEmpty())
+					&& (dto.getEmail() == null || dto.getEmail().isEmpty())
+					&& (dto.getPhoneNumber() == null || dto.getPhoneNumber().isEmpty())) {
 				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide at least one field for update.",
 						null);
 			}
 		}
+
 		return new Response<>(HttpStatus.OK.value(), "OK", null);
 	}
 
@@ -120,8 +122,10 @@ public class ValidationServiceImpl implements ValidationService {
 			}
 		} else {
 			if ((incomeTransactionDto.getAmount() == null || incomeTransactionDto.getAmount() <= 0)
-					&& (incomeTransactionDto.getSource() == null || incomeTransactionDto.getSource().trim().isEmpty())) {
-				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide at least one field for update.", null);
+					&& (incomeTransactionDto.getSource() == null
+							|| incomeTransactionDto.getSource().trim().isEmpty())) {
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "Please provide at least one field for update.",
+						null);
 			}
 		}
 
@@ -130,19 +134,19 @@ public class ValidationServiceImpl implements ValidationService {
 
 	@Override
 	public Response<?> checkForWalletDeductPayLoad(WalletDto walletDto) {
-		  if (walletDto == null) {
-			   return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet should not be null.", null);
-			  } else if (walletDto.getId() == null) {
-			   return new Response<>(HttpStatus.BAD_REQUEST.value(), "Id is required.", null);
-			  } else if (walletDto.getBalance() == null) {
-			   return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet balance should not be null.", null);
-			  } else if (walletDto.getBalance() <= 0) {
-			   return new Response<>(HttpStatus.BAD_REQUEST.value(), "Balance should be greater than zero .", null);
-			  } else if (walletDto.getUserDto() == null || walletDto.getUserDto().getId() == null) {
-			   return new Response<>(HttpStatus.BAD_REQUEST.value(), "User id is required .", null);
-			  }
-			  return new Response<>(HttpStatus.OK.value(), "OK", null);
-			 
-			 }
+		if (walletDto == null) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet should not be null.", null);
+		} else if (walletDto.getId() == null) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Id is required.", null);
+		} else if (walletDto.getBalance() == null) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Wallet balance should not be null.", null);
+		} else if (walletDto.getBalance() <= 0) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Balance should be greater than zero .", null);
+		} else if (walletDto.getUserDto() == null || walletDto.getUserDto().getId() == null) {
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "User id is required .", null);
+		}
+		return new Response<>(HttpStatus.OK.value(), "OK", null);
+
+	}
 
 }

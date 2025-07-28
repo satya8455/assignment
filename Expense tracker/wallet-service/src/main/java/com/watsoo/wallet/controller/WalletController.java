@@ -48,7 +48,7 @@ public class WalletController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping("get/wallet-type/{userId}")
+	@GetMapping("get/wallet-type/{userId}")	
 	public ResponseEntity<?> getWalletTypeById(@PathVariable Long userId) {
 		Response<?> response = walletService.getAllWalletType(userId);
 		return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));
@@ -59,8 +59,8 @@ public class WalletController {
 			Response<?> response = walletService.createWalletType(walletTypeDto);
 			return new ResponseEntity<>(response, HttpStatus.valueOf(response.getResponseCode()));
 	}
-	@PostMapping("deduct/from/wallet")
-	 public ResponseEntity<?> deductFromWallet(@RequestBody WalletDto walletDto) {
+	@PostMapping("/deduct/wallet")
+	 public ResponseEntity<?> deductAmountFromWallet(@RequestBody WalletDto walletDto) {
 	  Response<?> validationResponse = validationService.checkForWalletDeductPayLoad(walletDto);
 	  if (validationResponse.getResponseCode() == HttpStatus.OK.value()) {
 	   Response<?> response = walletService.deductFromWallet(walletDto);
