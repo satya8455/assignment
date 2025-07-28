@@ -84,7 +84,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Something went wrong", null);
 		}
 	}
 

@@ -14,7 +14,5 @@ public interface ExpenseCategoryRepository extends JpaRepository<ExpenseCategory
 	@Query(value = "SELECT * FROM expense_category WHERE user_id IS NULL OR user_id = ?1", nativeQuery = true)
 	List<ExpenseCategory> findAllByUserId(Long userId);
 
-	Optional<ExpenseCategory> findByNameAndUserId(String categoryName, Long userId);
-
 
 }

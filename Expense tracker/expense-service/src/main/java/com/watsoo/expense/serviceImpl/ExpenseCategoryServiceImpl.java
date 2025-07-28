@@ -56,7 +56,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Something went wrong", null);
 		}
 	}
 
@@ -70,7 +70,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Something went wrong", null);
 		}
 	}
 

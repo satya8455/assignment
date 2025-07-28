@@ -128,7 +128,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -162,7 +162,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Something went wrong", null);
 		}
 	}
 
