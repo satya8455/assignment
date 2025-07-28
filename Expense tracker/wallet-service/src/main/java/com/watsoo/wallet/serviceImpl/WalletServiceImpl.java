@@ -86,6 +86,7 @@ public class WalletServiceImpl implements WalletService {
 	@Override
 	public Response<?> getAllWallet(Long userId) {
 		try {
+			
 			Optional<User> userOptional = userRepository.findById(userId);
 
 			if (userOptional.isEmpty()) {

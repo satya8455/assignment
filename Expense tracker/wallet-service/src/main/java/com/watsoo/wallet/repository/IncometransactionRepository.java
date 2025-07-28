@@ -18,12 +18,12 @@ public interface IncometransactionRepository extends JpaRepository<IncomeTransac
 
 	List<IncomeTransaction> findByWallet_Id(Long walletId);
 
-	@Query(value = "SELECT it.* FROM income_transactions it " + "JOIN wallets w ON w.id = it.wallet_id "
-			+ "WHERE w.user_id = ?1 AND DATE(it.date) BETWEEN ?2 AND ?3 ORDER BY it.date DESC", nativeQuery = true)
+	@Query(value = "SELECT e.* FROM income_transactions e " + "JOIN wallets w ON w.id = e.wallet_id "
+			+ "WHERE w.user_id = ?1 AND DATE(e.date) BETWEEN ?2 AND ?3 ORDER BY e.date DESC", nativeQuery = true)
 	List<IncomeTransaction> findByUserIdAndDateRange(Long userId, LocalDate startDate, LocalDate endDate);
 
-	@Query(value = "SELECT it.* FROM income_transactions it " + "JOIN wallets w ON w.id = it.wallet_id "
-			+ "WHERE w.user_id = ?1 ORDER BY it.date DESC", nativeQuery = true)
+	@Query(value = "SELECT e.* FROM income_transactions e " + "JOIN wallets w ON w.id = e.wallet_id "
+			+ "WHERE w.user_id = ?1 ORDER BY e.date DESC", nativeQuery = true)
 	List<IncomeTransaction> findByUserId(Long userId);
 
 }

@@ -84,7 +84,6 @@ public class IncomeTransactionServiceImpl implements IncomeTransactionService {
 			if (incomeTransactionDto.getRemarks() != null) {
 				incomeTransaction.setRemarks(incomeTransactionDto.getRemarks());
 			}
-
 			if (incomeTransactionDto.getSource() != null) {
 				incomeTransaction.setSource(incomeTransactionDto.getSource());
 			}
