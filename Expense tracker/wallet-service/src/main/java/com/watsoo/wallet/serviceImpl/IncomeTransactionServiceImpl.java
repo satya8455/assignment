@@ -66,7 +66,7 @@ public class IncomeTransactionServiceImpl implements IncomeTransactionService {
 			Optional<IncomeTransaction> existingTransaction = incometransactionRepository
 					.findById(incomeTransactionDto.getId());
 			if (!existingTransaction.isPresent()) {
-				return new Response<>(HttpStatus.BAD_REQUEST.value(), "No  transaction found to update", null);
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "No transaction found to update", null);
 			}
 			IncomeTransaction incomeTransaction = existingTransaction.get();
 			Double oldAmount = incomeTransaction.getAmount();
@@ -93,7 +93,7 @@ public class IncomeTransactionServiceImpl implements IncomeTransactionService {
 			return new Response<>(HttpStatus.OK.value(), "Transaction updated", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -146,10 +146,8 @@ public class IncomeTransactionServiceImpl implements IncomeTransactionService {
 
 			 return new Response<>(HttpStatus.OK.value(),"Transactions fetched", dtos);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			 return new Response<>(HttpStatus.BAD_REQUEST.value(),"Something went wrong", null);
-
 		}
 	}
 

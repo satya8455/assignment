@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
 			return new Response<>(HttpStatus.BAD_REQUEST.value(), "invalid credential", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class UserServiceImpl implements UserService {
 				return new Response<>(HttpStatus.OK.value(), "You don't have permission for this route", null);
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+				return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 			}
 		}
 	 
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "Something went wrong", null);
 
 		}
 

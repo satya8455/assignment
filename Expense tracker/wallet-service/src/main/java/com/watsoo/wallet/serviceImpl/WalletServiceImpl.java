@@ -79,7 +79,7 @@ public class WalletServiceImpl implements WalletService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class WalletServiceImpl implements WalletService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -144,7 +144,7 @@ public class WalletServiceImpl implements WalletService {
 			return new Response<>(HttpStatus.OK.value(), "Found successfully", walllTypeDtos);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
@@ -186,7 +186,7 @@ public class WalletServiceImpl implements WalletService {
 			return new Response<>(HttpStatus.OK.value(), "Deducted successfully", null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Response<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), "something went wrong", null);
+			return new Response<>(HttpStatus.BAD_REQUEST.value(), "something went wrong", null);
 		}
 	}
 
